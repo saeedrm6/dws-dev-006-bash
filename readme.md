@@ -1,9 +1,7 @@
 #dws-dev-006-bash
 <p>
-you can run commands with try by using this shell files. you need 
-passing args to input. first app have a basic validation but I
-cant spent more times for it. if you would like , you can send your
-pull requests :)
+you can run commands with ./try_1 and ./try_2. you need passing args to input. the first app has a basic validation but I cant spend more time on it. if you would like, you can send your
+pull requests to get ./try_1 better:)
 </p>
 <p>
 you can use try_2 with env values too. you can define $TRY_INTERVAL, 
