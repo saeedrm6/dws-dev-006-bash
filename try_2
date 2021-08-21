@@ -1,0 +1,86 @@
+#!/bin/bash
+
+#default values
+INTERVAL=NULL
+NUMBER=NULL
+COMMAND=NULL
+
+#getting inputs
+inputs=( "$@" )
+
+#loop for getting and setting args to default values
+for char in "${!inputs[@]}"; do
+    case "${inputs[char]}" in
+      -i)
+          INTERVAL="${inputs[char+1]}"
+          unset 'inputs[char+1]'
+      ;;
+      -n)
+          NUMBER="${inputs[char+1]}"
+          unset 'inputs[char+1]'
+      ;;
+      *)
+          continue
+      ;;
+    esac
+    unset 'inputs[char]'
+done
+
+#setting interval if inputs is blank
+if [[ $INTERVAL == "NULL" ]]; then
+    if [ -z $TRY_INTERVAL ]; then
+      INTERVAL=15
+    else
+      INTERVAL=$TRY_INTERVAL
+	  fi
+fi
+
+#setting number if inputs is blank
+if [[ $NUMBER == "NULL" ]]; then
+  if [ -z $TRY_NUMBER ]; then
+      NUMBER=12
+  else
+      NUMBER=$TRY_NUMBER
+  fi
+fi
+
+#final command of inpute after deleting args
+COMMAND=${inputs[@]};
+
+#setting command if inputs is blank
+if [[ $COMMAND == "NULL" ]]; then
+  if [ -z $TRY_COMMAND ]; then
+      COMMAND=NULL
+  else
+      COMMAND=$TRY_COMMAND
+  fi
+fi
+
+#running command and passing errors to stderr
+$COMMAND 2>/dev/null
+
+
+if [ $? -eq 0 ]; then
+    echo "Running COMMAND : $COMMAND was  $(tput setab 2)successfully$(tput sgr 0)"
+    exit 0;
+else
+  echo "Running COMMAND : $COMMAND was  $(tput setab 1)failed$(tput sgr 0)"
+  for (( i = 1; i <= $NUMBER; i++ )); do
+    echo "trying to running again command (LOOP $i)"
+    $COMMAND 2>$(pwd)/response.txt
+    if [ $? -eq 0 ]; then
+      echo "running command in trying loop $i was $(tput setab 2)successfully$(tput sgr 0)";
+      exit 0;
+    elif [ $i -ne $NUMBER ]; then
+      sleep $INTERVAL
+    elif [ $i -eq $NUMBER -a $? -ne 0 ]; then
+        >&2 echo "$(tput setab 1)error$(tput sgr 0)"
+        exit 1;
+    fi
+  done
+fi
+
+exit;
+
+
+

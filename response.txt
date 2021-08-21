@@ -1,0 +1,1 @@
+./try_2: line 70: ping1: command not found
